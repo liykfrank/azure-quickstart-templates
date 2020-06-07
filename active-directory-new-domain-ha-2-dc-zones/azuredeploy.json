@@ -16,7 +16,7 @@
         "eastus2",
         "eastasia"
       ],
-      "defaultValue": "eastasia",
+      "defaultValue": "westeurope",
       "metadata": {
         "description": "Location for the VM, only certain regions support zones during preview."
       }
@@ -39,6 +39,14 @@
         "description": "The DNS prefix for the public IP address used by the Load Balancer"
       }
     },
+    "adAvailabilitySetName": {
+      "type": "string",
+       "defaultValue": "adAvailabiltySet",
+      "metadata": {
+        "description": "The name of the availability set that the AD VM is created in"
+      }
+    },    
+    
     "_artifactsLocation": {
       "type": "string",
       "metadata": {
@@ -88,10 +96,22 @@
   },
   "resources": [
     {
+        "type": "Microsoft.Compute/availabilitySets",
+        "name": "[parameters('adAvailabilitySetName')]",
+        "apiVersion": "2017-03-30",
+        "location": "[parameters('location')]",
+        "properties": {
+            "platformFaultDomainCount": 2,
+            "platformUpdateDomainCount": 5
+        },
+        "sku": {
+            "name": "Aligned"
+        }
+    },
+    {
       "name": "[variables('publicIPAddressName')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2016-11-01",
-      "zones": ["1"],
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
@@ -179,10 +199,10 @@
       "name": "[variables('adPDCVMName')]",
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2017-03-30",
-      "zones": ["1"],
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces',variables('adPDCNicName'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces',variables('adPDCNicName'))]",
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('adAvailabilitySetName'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -191,7 +211,10 @@
         "osProfile": {
           "computerName": "[variables('adPDCVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+             "provisionVmAgent": "true"
+           }
         },
         "storageProfile": {
           "imageReference": {
@@ -215,9 +238,9 @@
             }
           ]
         }
-      }
-    },
-    {
+      },
+     "resources": [
+        {
           "name": "[concat(variables('adPDCVMName'),'/CreateADForest')]",
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "apiVersion": "2016-03-30",
@@ -250,41 +273,11 @@
                 }
             }
           }
-        },
-    {
-      "name": "UpdateVNetDNS1",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2016-09-01",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('adPDCVMName'),'/extensions/CreateADForest')]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('vnetwithDNSTemplateUri')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "virtualNetworkName": {
-            "value": "[variables('virtualNetworkName')]"
-          },
-          "virtualNetworkAddressRange": {
-            "value": "[variables('virtualNetworkAddressRange')]"
-          },
-          "subnetName": {
-            "value": "[variables('adSubnetName')]"
-          },
-          "subnetRange": {
-            "value": "[variables('adSubnet')]"
-          },
-          "DNSServerAddress": {
-            "value": [
-              "[variables('adPDCNicIPAddress')]"
-            ]
-          }
         }
-      }
+     ]
     }
+    
+  
    
   ]
 }
