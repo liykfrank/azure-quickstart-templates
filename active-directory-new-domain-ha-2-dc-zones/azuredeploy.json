@@ -208,6 +208,9 @@
         "hardwareProfile": {
           "vmSize": "[variables('adVMSize')]"
         },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('adAvailabilitySetName'))]"
+        },
         "osProfile": {
           "computerName": "[variables('adPDCVMName')]",
           "adminUsername": "[parameters('adminUsername')]",
