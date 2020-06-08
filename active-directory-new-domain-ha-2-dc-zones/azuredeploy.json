@@ -281,17 +281,16 @@
      ]
     },
      {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2018-11-01",
       "name": "UpdateVNetDNS1",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName')[0], 'CreateAdForest')]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName')[1], 'PepareBDC')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('adPDCVMName'),'/extensions/CreateADForest')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('vnetTemplateUri')]",
+          "uri": "[variables('vnetwithDNSTemplateUri')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -309,16 +308,12 @@
           },
           "DNSServerAddress": {
             "value": [
-              "[variables('ipAddress')]"
+              "[variables('adPDCNicIPAddress')]"
             ]
-          },
-          "location": {
-            "value": "[parameters('location')]"
           }
         }
       }
-    }
-    
+    },
    
   ]
 }
