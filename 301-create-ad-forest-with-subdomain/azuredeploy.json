@@ -229,7 +229,7 @@
     "firstVMTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/CreateAndPrepnewVM.json',parameters('_artifactsLocationSasToken'))]",
     "nextVMTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/CreateAndPrepnewVM.json',parameters('_artifactsLocationSasToken'))]",
     "vnetTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/vnet.json',parameters('_artifactsLocationSasToken'))]",
-    "vnetwithDNSTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/vnet-with-dns-server.json',parameters('_artifactsLocationSasToken'))]",
+    "vnetwithDNSTemplateUri": "https://github.com/liykfrank/azure-quickstart-templates/blob/master/301-create-ad-forest-with-subdomain/nested/vnet-with-dns-server.json",
     "configureADNextDCTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/configureADNextDC.json',parameters('_artifactsLocationSasToken'))]",
     "createForestTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/createForest.json',parameters('_artifactsLocationSasToken'))]",
     "createChildDomainTemplateUri": "[concat(parameters('_artifactsLocation'),'/nested/createChildDomain.json',parameters('_artifactsLocationSasToken'))]",
