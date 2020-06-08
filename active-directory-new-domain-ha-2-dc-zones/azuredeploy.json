@@ -280,38 +280,34 @@
         }
      ]
     },
-    {
+     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-11-01",
-      "name": "UpdateBDCNIC",
+      "name": "UpdateVNetDNS1",
       "dependsOn": [
-        "UpdateVNetDNS1"
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName')[0], 'CreateAdForest')]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName')[1], 'PepareBDC')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('nicTemplateUri')]",
+          "uri": "[variables('vnetTemplateUri')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "nicName": {
-            "value": "[variables('nicName')[1]]"
+          "virtualNetworkName": {
+            "value": "[variables('virtualNetworkName')]"
           },
-          "ipConfigurations": {
-            "value": [
-              {
-                "name": "ipconfig1",
-                "properties": {
-                  "privateIPAllocationMethod": "Static",
-                  "privateIPAddress": "[variables('ipAddress')[1]]",
-                  "subnet": {
-                    "id": "[variables('adSubnetRef')]"
-                  }
-                }
-              }
-            ]
+          "virtualNetworkAddressRange": {
+            "value": "[variables('virtualNetworkAddressRange')]"
           },
-          "dnsServers": {
+          "subnetName": {
+            "value": "[variables('adSubnetName')]"
+          },
+          "subnetRange": {
+            "value": "[variables('adSubnet')]"
+          },
+          "DNSServerAddress": {
             "value": [
               "[variables('ipAddress')]"
             ]
